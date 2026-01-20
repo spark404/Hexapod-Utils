@@ -8,11 +8,11 @@ FetchContent_MakeAvailable(googletest)
 add_link_options("$<$<CONFIG:DEBUG>:--coverage>")
 
 add_executable(ring_buffer_test ring_buffer_TEST.cc)
-add_dependencies(ring_buffer_test hexapodutils)
+add_dependencies(ring_buffer_test HexapodUtils)
 
 target_link_libraries(ring_buffer_test
         GTest::gtest_main
-        hexapodutils
+        HexapodUtils
 )
 
 
