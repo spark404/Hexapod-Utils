@@ -1,0 +1,47 @@
+name: Build/Test Using CMake
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  BUILD_TYPE: Coverage
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Gcovr
+      uses: threeal/pipx-install-action@v1.0.0
+      with:
+        packages: gcovr
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: Test
+      working-directory: ${{github.workspace}}/build
+      run: ctest -T Test -T Coverage -C ${{env.BUILD_TYPE}} --output-junit junit.xml
+
+    - name: Check Test Coverage
+      if: success() || failure() # always run even if the previous step fails
+      run: gcovr --fail-under-line 78 --markdown coverage.md
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v5
+      if: success() || failure() # always run even if the previous step fails
+      with:
+        report_paths: ${{github.workspace}}/build/junit.xml
+
+    - name: Publish Coverage Report
+      if: success() || failure() # always run even if the previous step fails
+      run: |
+        cat coverage.md >> $GITHUB_STEP_SUMMARY
