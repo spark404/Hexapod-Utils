@@ -1,5 +1,5 @@
 set(HEADER_LIST
-        "${HexapodUtilsLibrary_SOURCE_DIR}/include/ring_buffer.h"
+        "${HexapodUtils_SOURCE_DIR}/include/ring_buffer.h"
 )
 
 add_library(HexapodUtils
